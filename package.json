@@ -1,22 +1,42 @@
 {
-  "name": "electron-quick-start",
-  "version": "1.0.0",
-  "description": "A minimal Electron application",
-  "main": "main.js",
-  "scripts": {
-    "start": "electron ."
-  },
-  "repository": "https://github.com/electron/electron-quick-start",
-  "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
-  ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
-  "devDependencies": {
-    "electron": "^10.1.3"
-  }
+	"name": "server-group-tool",
+	"productName": "Server Group Tool",
+	"version": "2.0.0",
+	"description": "A tool to login to server groups. Intended to lighten the workload for Hotfix deployment.",
+	"main": "main.js",
+	"scripts": {
+		"start": "electron .",
+		"build": "tsc",
+		"pack": "electron-builder --dir",
+		"dist": "electron-builder",
+		"portable": "electron-builder build --dir --win portable"
+	},
+	"author": "Seth Maxson",
+	"license": "CC0-1.0",
+	"devDependencies": {
+		"@types/node": "^13.13.15",
+		"@types/react": "^16.9.51",
+		"@types/react-dom": "^16.9.8",
+		"electron": "^10.1.3",
+		"electron-builder": "^22.9.1"
+	},
+	"dependencies": {
+		"@types/jquery": "^3.5.0",
+		"jquery": "^3.5.1",
+		"path": "^0.12.7",
+		"react": "^16.13.1",
+		"react-dom": "^16.13.1",
+		"typescript": "^4.0.3",
+		"url": "^0.11.0"
+	},
+	"build": {
+	  "appId": "server.group.tool",
+	  "mac": {
+		"category": "your.app.category.type"
+	  },
+	  "win": {
+		"target": "portable",
+		"icon": "images/E1.ico"
+	  }
+	}
 }

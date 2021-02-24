@@ -1,19 +1,87 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-    <title>Hello World!</title>
-  </head>
-  <body>
-    <h1>Hello World!</h1>
-    We are using Node.js <span id="node-version"></span>,
-    Chromium <span id="chrome-version"></span>,
-    and Electron <span id="electron-version"></span>.
 
-    <!-- You can also require other files to run in this process -->
-    <script src="./renderer.js"></script>
-  </body>
+	<head>
+		<meta charset="UTF-8">
+		<title>Deployment Server Toolkit</title>
+		<link rel="stylesheet" href="css/main.css" />
+	</head>
+
+	<body>
+		<div id="title-bar" class="no-select">
+			<div id="title">
+				<img src="images/E1.png" style="height:26px; float:left; margin-top:3px; margin-right:5px;" alt="image"/>
+				Windows 95
+			</div>
+			<div id="title-bar-btns">
+				<button id="min-button">-</button>
+				<button id="max-button">+</button>
+				<button id="close-button">X</button>
+			</div>
+		</div>
+		<!-- <div id="title-bar" class="mac">
+			<div id="title">
+				<img src="images/E1.png" style="height:18px; float:left; margin-top:3px; margin-right:5px;" alt="image"/>
+				Windows Vista
+			</div>
+			<div id="title-bar-btns">
+				<button id="close-button">x</button>
+				<button id="min-button">-</button>
+				<button id="max-button">+</button>
+			</div>
+		</div> -->
+		<div class="maincontainer">
+			<div id="main">
+				<div class="side-menu">
+					<input type="text" id="username-entry" placeholder="username" value="SMaxson" />
+					<input type="password" id="password-entry" placeholder="password" value="arwing8r" />
+					<div class="no-select">
+						<div style="margin-top:0.5em;">
+							Login to:
+						</div>
+						<button style="width:100%;" class="group-login-button" id="group-1-button">
+							Server Group 1
+						</button>
+						<button style="width:100%;" class="group-login-button" id="group-2-button">
+							Server Group 2
+						</button>
+						<button style="width:100%;" class="group-login-button" id="group-3-button">
+							Server Group 3
+						</button>
+						<button style="width:100%;" class="group-login-button" id="group-4-button">
+							Server Group 4
+						</button>
+
+						<button style="width:100%; margin-top:50px;" id="claim-servers">
+							Claim All Servers
+						</button>
+					</div>
+				</div>
+				<div id="webFrame">
+					<!-- <div class="prevPage crt" id="prevPage"></div> -->
+					<div id="depDashFrame"></div>
+					<div class="prevPage" id="prevPage"></div>
+				</div>
+			</div>
+			<div id="result-tray" class="hidden">
+				<button class="tab-button" id="group-1">
+					<span>Group 1</span>
+				</button>
+				<button class="tab-button" id="group-2">
+					<span>Group 2</span>
+				</button>
+				<button class="tab-button" id="group-3">
+					<span>Group 3</span>
+				</button>
+				<button class="tab-button" id="group-4">
+					<span>Group 4</span>
+				</button>
+			</div>
+			<script>
+				require('./dist/renderer.js');
+				require('./dist/deployment-dashboard.js');
+			</script>
+		</div>
+	</body>
+
 </html>

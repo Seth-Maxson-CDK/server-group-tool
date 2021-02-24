@@ -1,0 +1,10 @@
+directories:
+  output: dist
+  buildResources: build
+appId: server.group.tool
+mac:
+  category: your.app.category.type
+win:
+  target: portable
+  icon: images/E1.ico
+electronVersion: 10.1.5
