@@ -18,11 +18,25 @@ ipcRenderer.on('claim-all-servers', (event: any)=>
 {
 	try
 	{
-		// console.log("claim-all-servers called");
 		claimAll();
 	} catch (error)
 	{
 		throw error;
+	}
+})
+
+
+ipcRenderer.on('check-group-status', (event: any)=>
+{
+	if (isInteractive()) {
+		ipcRenderer.sendToHost('group-deploy-complete', true);
+	}
+})
+
+ipcRenderer.on('check-login-status', (event: any)=>
+{
+	if (!isInteractive()) {
+		ipcRenderer.sendToHost('group-login-complete', true);
 	}
 })
 
@@ -57,7 +71,7 @@ function setServerState(serverName: string, pass: boolean)
 function claimAll()
 {
 	let unclaimed = $(`input[type="submit"][value="Unclaimed"]`);
-	if (unclaimed.length >0) {
+	if (unclaimed.length > 0) {
 		unclaimed[0].click();
 	} else
 	{
@@ -65,5 +79,10 @@ function claimAll()
 	}
 }
 
+/**Check if there is currently an interactive server group on the dashboard. This can serve as an indicator of whether the deployment of the most recent server group has finished. */
+function isInteractive(): boolean
+{
+	return $("#gvServerList a").length > 0;
+}
 
 // console.log("depdash-embedded.js loaded");

@@ -256,5 +256,11 @@ $(document).ready(function () {
     depDashboard = new deployment_dashboard_1.DeploymentDashboard();
     $("#depDashFrame").append(depDashboard.WebView);
     // doStuff(groups);
+    const myNotification = new Notification('Title', {
+        body: 'Notification from the Renderer process'
+    });
+    myNotification.onclick = () => {
+        console.log('Notification clicked');
+    };
 });
 //# sourceMappingURL=renderer.js.map

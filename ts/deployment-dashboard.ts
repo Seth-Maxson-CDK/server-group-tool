@@ -4,9 +4,15 @@ import { WebviewTag } from 'electron';
 export class DeploymentDashboard
 {
 	WebView: JQuery<WebviewTag>;
+	/**Are we currently in the process of claiming all the active servers on the dashboard? */
 	private claimingAll: boolean;
+	/**Are we currently waiting for the next server group to finish deploying? */
+	private waitingForDeploy: boolean = false;
+	/**Are we currently in the process of logging into a server group? */
+	private loggingIntoGroup: boolean = false;
+	/**Should debug information be shown in the console? */
+	private debug = false;
 	queue: { serverName: string, pass: boolean }[];
-	useLegacySetServerState: boolean = false;
 	constructor()
 	{
 		this.claimingAll = false;
@@ -15,7 +21,9 @@ export class DeploymentDashboard
 		this.WebView = $(`<webview id="Deployment-Dashboard" src="${deploymentDashboardUrl}" webpreferences="disableDialogs" preload="./dist/depdash-embedded.js"></webview>`);
 		this.WebView[0].addEventListener('console-message', (e) =>
 		{
-			console.log('Deployment Dashboard:', e.message);
+			if (this.debug) {
+				console.log('Deployment Dashboard:', e.message);
+			}
 		});
 		this.WebView[0].addEventListener('ipc-message', (event) =>
 		{
@@ -25,40 +33,50 @@ export class DeploymentDashboard
 			}
 			else if (event.channel == 'group-deploy-complete')
 			{
-
+				this.waitingForDeploy = false;
+				new Notification('Server Group Deployment Complete', {
+					body: 'The deployment for the current server group has finished. Logins can begin now.'
+				});
+			}
+			else if (event.channel == 'group-login-complete')
+			{
+				this.waitingForDeploy = true;
+				new Notification('Server Group Logins', {
+					body: 'Logins for this server group have finished. All servers are operational.'
+				});
 			}
 		});
-		if (!this.useLegacySetServerState)
+		this.WebView.on("did-finish-load", () =>
 		{
-			this.WebView.on("did-finish-load", () =>
+			if (this.claimingAll)
 			{
-				if (this.claimingAll)
+				this.WebView[0].send('claim-all-servers');
+			}
+			else if (this.waitingForDeploy)
+			{
+				this.WebView[0].send('check-group-status');
+			}
+			else if (this.queue.length > 0)
+			{
+				let serverName = this.queue[0].serverName;
+				let pass = this.queue[0].pass;
+				this.queue.shift();
+				if (this.debug)
 				{
-					this.WebView[0].send('claim-all-servers');
-				}
-				else if (this.queue.length > 0)
-				{
-					let serverName = this.queue[0].serverName;
-					let pass = this.queue[0].pass;
-					this.queue.shift();
 					console.log(`set-server-state: serverName: ${serverName}, pass: ${pass}`);
-					this.WebView[0].send('set-server-state', serverName, pass);
 				}
-
-
-			});
-		}
+				this.WebView[0].send('set-server-state', serverName, pass);
+			}
+			else if (this.loggingIntoGroup && this.queue.length == 0)
+			{
+				this.loggingIntoGroup = false;
+				this.WebView[0].send('check-login-status');
+			}
+		});
 	}
 	ClaimAll()
 	{
 		this.claimingAll = true;
-		if (this.useLegacySetServerState) {
-			this.WebView.one("did-finish-load", () =>
-				{
-					this.WebView[0].send('claim-all-servers');
-				}
-			)
-		}
 	}
 	/**
 	 * Updates the pass/fail state of a server on the dashboard
@@ -67,13 +85,7 @@ export class DeploymentDashboard
 	 */
 	SetServerState(serverName: string, pass: boolean): void
 	{
+		this.loggingIntoGroup = true;
 		this.queue.push({ serverName: serverName, pass: pass });
-		if (this.useLegacySetServerState) {
-			this.WebView.one("did-finish-load", () =>
-				{
-					this.WebView[0].send('set-server-state', serverName, pass);
-				}
-			)
-		}
 	}
 }

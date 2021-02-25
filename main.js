@@ -33,6 +33,8 @@ function createWindow() {
 		slashes: true
 	}));
 
+	app.setAppUserModelId(process.execPath)
+
 	// Open the DevTools.
 	// mainWindow.webContents.openDevTools()
 

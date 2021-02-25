@@ -12,11 +12,20 @@ ipcRenderer.on('set-server-state', (event, serverName, pass) => {
 });
 ipcRenderer.on('claim-all-servers', (event) => {
     try {
-        // console.log("claim-all-servers called");
         claimAll();
     }
     catch (error) {
         throw error;
+    }
+});
+ipcRenderer.on('check-group-status', (event) => {
+    if (isInteractive()) {
+        ipcRenderer.sendToHost('group-deploy-complete', true);
+    }
+});
+ipcRenderer.on('check-login-status', (event) => {
+    if (!isInteractive()) {
+        ipcRenderer.sendToHost('group-login-complete', true);
     }
 });
 /**
@@ -51,6 +60,10 @@ function claimAll() {
     else {
         ipcRenderer.sendToHost('claim-all-complete', true);
     }
+}
+/**Check if there is currently an interactive server group on the dashboard. This can serve as an indicator of whether the deployment of the most recent server group has finished. */
+function isInteractive() {
+    return $("#gvServerList a").length > 0;
 }
 // console.log("depdash-embedded.js loaded");
 //# sourceMappingURL=depdash-embedded.js.map
