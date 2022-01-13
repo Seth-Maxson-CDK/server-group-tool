@@ -5,6 +5,7 @@
 		<meta charset="UTF-8">
 		<title>Deployment Server Toolkit</title>
 		<link rel="stylesheet" href="css/main.css" />
+		<link rel="stylesheet" href="css/result-tray.css" />
 	</head>
 
 	<body>
@@ -33,8 +34,8 @@
 		<div class="maincontainer">
 			<div id="main">
 				<div class="side-menu">
-					<input type="text" id="username-entry" placeholder="username" value="SMaxson" />
-					<input type="password" id="password-entry" placeholder="password" value="arwing8r" />
+					<input type="text" id="username-entry" placeholder="username" />
+					<input type="password" id="password-entry" placeholder="password" />
 					<div class="no-select">
 						<div style="margin-top:0.5em;">
 							Login to:
@@ -55,6 +56,24 @@
 						<button style="width:100%; margin-top:50px;" id="claim-servers">
 							Claim All Servers
 						</button>
+						<div class="control" style="width:100%;">
+							<span class="control-name">
+								Claim All Servers
+							</span>
+							<label class="switch">
+								<input type="checkbox" id="check-claim-servers" />
+								<span class="slider"></span>
+							</label>
+						</div>
+						<div class="control" style="width:100%;">
+							<span class="control-name">
+								Check Build
+							</span>
+							<label class="switch">
+								<input type="checkbox" id="check-check-build" />
+								<span class="slider"></span>
+							</label>
+						</div>
 					</div>
 				</div>
 				<div id="webFrame">
@@ -63,7 +82,7 @@
 					<div class="prevPage" id="prevPage"></div>
 				</div>
 			</div>
-			<div id="result-tray" class="hidden">
+			<div id="result-tray">
 				<button class="tab-button" id="group-1">
 					<span>Group 1</span>
 				</button>
@@ -78,8 +97,7 @@
 				</button>
 			</div>
 			<script>
-				require('./dist/renderer.js');
-				require('./dist/deployment-dashboard.js');
+				require('./build/renderer.js');
 			</script>
 		</div>
 	</body>

@@ -1,7 +1,15 @@
 directories:
   output: dist
-  buildResources: build
+  buildResources: assets
+extends: null
 appId: server.group.tool
+files:
+  - filter:
+      - build/**/*
+      - '**/*.js'
+      - css/**/*
+      - '**/*.html'
+      - images/**/*.png
 mac:
   category: your.app.category.type
 win:

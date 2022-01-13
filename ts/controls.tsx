@@ -1,108 +1,55 @@
-// import React from 'react';
-// import ReactDOM from 'react-dom';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { ServerGroup } from './interfaces';
-// import './index.css';
+import { IServerGroupStatus, IServerStatus } from './interfaces';
 
-class Square extends React.Component<{ value: string }, {}> {
-	render() {
-		return (
-			<button className="square">
-				{this.props.value}
-			</button>
-		);
-	}
+
+interface IServerRowProps
+{
+	server: IServerStatus;
 }
-
-class Board extends React.Component {
-	renderSquare(i: number|string) {
-		return <Square value={i as string} />;
-	}
-
-	render() {
-		const status = 'Next player: X';
-
-		return (
-			<div>
-				<div className="status">{status}</div>
-				<div className="board-row">
-					{this.renderSquare(0)}
-					{this.renderSquare(1)}
-					{this.renderSquare(2)}
-				</div>
-				<div className="board-row">
-					{this.renderSquare(3)}
-					{this.renderSquare(4)}
-					{this.renderSquare(5)}
-				</div>
-				<div className="board-row">
-					{this.renderSquare(6)}
-					{this.renderSquare(7)}
-					{this.renderSquare(8)}
-				</div>
-			</div>
-		);
-	}
-}
-
-class Game extends React.Component {
-	render() {
-		return (
-			<div className="game">
-				<div className="game-board">
-				<Board />
-				</div>
-				<div className="game-info">
-				<div>{/* status */}</div>
-				<ol>{/* TODO */}</ol>
-				</div>
-			</div>
-		);
-	}
-}
-
-class ServerRow extends React.Component<{ name: string }, {}> {
-	render() {
-	  return (
-		<tr id={this.props.name + "-report"} className={this.props.name + " waiting"}>
-			<td className="indicator"></td>
-			<td className="name">
-				{this.props.name}
-			</td>
-			<td className="status">Awaiting...</td>
-		</tr>
-	  );
-	}
-  }
-
-export class ServerGroupReport extends React.Component<{ name: string, servers: string[] }, {}> {
+class ServerRow extends React.Component<IServerRowProps> {
 	render()
 	{
-		const rows: JSX.Element[] = [];
-
-		this.props.servers.forEach((server) => {
-		  rows.push(
-			<ServerRow
-				  name={server}
-				  key={server}
-			/>
-		  );
-		});
 		return (
-			// 	<div className="group-report hidden">
+			<tr className={this.props.server.name + " waiting"}>
+				<td className="indicator">{this.props.server.running ? <div className="lds-dual-ring"></div> : undefined}</td>
+				<td className="name">
+					{this.props.server.name}
+					{this.props.server.running ? <button className="cancel-login-btn">x</button> : <button className="server-login-btn">Go</button>}
+				</td>
+				<td className="status">{this.props.server.status}</td>
+				<td className="build">{this.props.server.build}</td>
+			</tr>
+		);
+	}
+}
+
+interface IServerGroupReportProps
+{
+	group: IServerGroupStatus;
+}
+interface IServerGroupReportState { }
+export class ServerGroupReport extends React.Component<IServerGroupReportProps, IServerGroupReportState> {
+	render()
+	{
+		return (
 			<div className="group-report">
-				<h2>{this.props.name}</h2>
+				<h2>{this.props.group.name}</h2>
 				<table className="results-table">
 					<thead>
 						<tr>
 							<th></th>
 							<th>Server</th>
 							<th>Status</th>
+							<th>Build</th>
 						</tr>
 					</thead>
 					<tbody>
-						{rows}
+						{this.props.group.servers.map((server, index: number) =>
+							<ServerRow
+								server={server}
+								key={server.name}
+							/>
+						)}
 					</tbody>
 				</table>
 			</div>
@@ -110,16 +57,57 @@ export class ServerGroupReport extends React.Component<{ name: string, servers: 
 	}
 }
 
-export function doShit(groups: ServerGroup[]) {
-	ReactDOM.render(
-		<ServerGroupReport name={groups[0].name} servers={groups[0].servers} key={groups[0].name} />,
-		document.getElementById('webFrame')
-	);
+interface IResultTrayProps
+{
+	groups: IServerGroupStatus[];
 }
-
-// ========================================
-
-// ReactDOM.render(
-// 	<Game />,
-// 	document.getElementById('root')
-// );
+interface IResultTrayState
+{
+	activeGroup: string;
+	expanded: boolean;
+}
+export class ResultTray extends React.Component<IResultTrayProps, IResultTrayState> {
+	public static defaultProps = {
+		show: false
+	};
+	constructor(props: IResultTrayProps)
+	{
+		super(props);
+		this.state = {
+			activeGroup: props.groups[0].id,
+			expanded: false
+		}
+	}
+	render()
+	{
+		return (
+			<div className={"result-tray" + (this.state.expanded ? "" : " hidden")}>
+				{
+					!this.state.expanded &&
+					<button className="result-expand-button" onClick={e => this.setState({ expanded: true })}>
+						<span>Results</span>
+					</button>
+				}
+				<div className="server-group-report">
+					<h2>
+						<button onClick={e => this.setState({ expanded: false })}>
+							<span>{">>"}</span>
+						</button>
+						<select
+							className="server-group-select"
+							onChange={e => this.setState({ activeGroup: e.target.value })}
+							value={this.state.activeGroup}
+						>
+							{this.props.groups.map((group, index: number) =>
+								<option value={group.id} key={group.id} >
+									{group.name}
+								</option>
+							)}
+						</select>
+					</h2>
+					<ServerGroupReport group={this.props.groups.filter(group => group.id == this.state.activeGroup)[0]} />
+				</div>
+			</div>
+		);
+	}
+}

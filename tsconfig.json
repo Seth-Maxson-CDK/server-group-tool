@@ -3,7 +3,7 @@
     "target": "es6",
 	"module": "commonjs",
 	"lib": ["es6", "dom", "es2017"],
-    "outDir": "dist",
+    "outDir": "build",
     "sourceMap": true,
 	"strict": true,
 	"jsx": "react"

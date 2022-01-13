@@ -34,6 +34,7 @@ export class DeploymentDashboard
 			else if (event.channel == 'group-deploy-complete')
 			{
 				this.waitingForDeploy = false;
+				this.claimingAll = true;
 				new Notification('Server Group Deployment Complete', {
 					body: 'The deployment for the current server group has finished. Logins can begin now.'
 				});
@@ -48,13 +49,13 @@ export class DeploymentDashboard
 		});
 		this.WebView.on("did-finish-load", () =>
 		{
-			if (this.claimingAll)
-			{
-				this.WebView[0].send('claim-all-servers');
-			}
-			else if (this.waitingForDeploy)
+			if (this.waitingForDeploy)
 			{
 				this.WebView[0].send('check-group-status');
+			}
+			else if (this.claimingAll)
+			{
+				this.WebView[0].send('claim-all-servers');
 			}
 			else if (this.queue.length > 0)
 			{
@@ -76,6 +77,7 @@ export class DeploymentDashboard
 	}
 	ClaimAll()
 	{
+		this.waitingForDeploy = true;
 		this.claimingAll = true;
 	}
 	/**
