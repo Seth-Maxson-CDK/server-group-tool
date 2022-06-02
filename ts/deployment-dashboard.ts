@@ -1,5 +1,6 @@
 import * as $ from 'jquery';
 import { WebviewTag } from 'electron';
+import { Config } from './config';
 
 export class DeploymentDashboard
 {
@@ -11,11 +12,12 @@ export class DeploymentDashboard
 	/**Are we currently in the process of logging into a server group? */
 	private loggingIntoGroup: boolean = false;
 	/**Should debug information be shown in the console? */
-	private debug = false;
+	private debug: boolean;
 	queue: { serverName: string, pass: boolean }[];
 	constructor()
 	{
 		this.claimingAll = false;
+		this.debug = Config.Debug;
 		this.queue = [];
 		const deploymentDashboardUrl = "http://supportstats:70/QATools/DeploymentDashBoard.aspx";
 		this.WebView = $(`<webview id="Deployment-Dashboard" src="${deploymentDashboardUrl}" webpreferences="disableDialogs" preload="./dist/depdash-embedded.js"></webview>`);
@@ -75,10 +77,10 @@ export class DeploymentDashboard
 			}
 		});
 	}
-	ClaimAll()
+	ClaimAll(value: boolean = true)
 	{
-		this.waitingForDeploy = true;
-		this.claimingAll = true;
+		this.waitingForDeploy = value;
+		this.claimingAll = value;
 	}
 	/**
 	 * Updates the pass/fail state of a server on the dashboard

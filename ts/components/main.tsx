@@ -4,7 +4,7 @@ import { IReleaseInfo, IServerGroupStatus } from '../interfaces';
 import { ResultTray } from '../controls';
 import { SideMenu } from './side-menu';
 import { TitleBar } from './title-bar';
-import { getReleaseInfoJson, getSafeServerID } from '../renderer';
+import { depDashboard, getReleaseInfoJson, getSafeServerID } from '../renderer';
 import { WebviewTag } from 'electron';
 
 interface IAppMainProps
@@ -21,6 +21,9 @@ interface IAppMainState
 	password: string;
 }
 export class AppMain extends React.Component<IAppMainProps, IAppMainState> {
+	// public static defaultProps = {
+	// 	mac: false
+	// };
 	constructor(props: IAppMainProps)
 	{
 		super(props);
@@ -34,9 +37,6 @@ export class AppMain extends React.Component<IAppMainProps, IAppMainState> {
 			password: "",
 		}
 	}
-	// public static defaultProps = {
-	// 	mac: false
-	// };
 	render()
 	{
 		return (
@@ -50,20 +50,26 @@ export class AppMain extends React.Component<IAppMainProps, IAppMainState> {
 							password={this.state.password}
 							username={this.state.username}
 							toggleCheckBuild={value => this.setState({ checkBuild: value })}
-							toggleClaimAllServers={value => this.setState({ claimAllServers: value })}
+							toggleClaimAllServers={
+								value =>
+								{
+									this.setState({ claimAllServers: value });
+									depDashboard.ClaimAll(value);
+								}
+							}
 							updatePassword={value => this.setState({ password: value })}
 							updateUsername={value => this.setState({ username: value })}
 						/>
 						<div id="webFrame">
 							<div
 								id="depDashFrame"
-								className={this.state.displayDeploymentDashboard ? undefined : "hidden" }
+								className={this.state.displayDeploymentDashboard ? undefined : "hidden"}
 							>
 								<button
 									className="fold-button deployment-dashboard-fold"
 									onClick={e => this.setState({ displayDeploymentDashboard: !this.state.displayDeploymentDashboard })}
 								>
-									{"Deployment Dashboard " + (this.state.displayDeploymentDashboard? "▲" : "▼")}
+									{"Deployment Dashboard " + (this.state.displayDeploymentDashboard ? "▲" : "▼")}
 								</button>
 							</div>
 							<div className="prevPage" id="prevPage"></div>
@@ -109,7 +115,8 @@ export class AppMain extends React.Component<IAppMainProps, IAppMainState> {
 		$(`webview#${serverID}`).remove();
 	}
 
-	loginToGroup = (groupId: string) =>  {
+	loginToGroup = (groupId: string) =>
+	{
 		if (this.hasLoginCredentials())
 		{
 			const group = this.state.serverGroups.filter(group => group.id == groupId)[0];
@@ -130,7 +137,8 @@ export class AppMain extends React.Component<IAppMainProps, IAppMainState> {
 			this.setState({ serverGroups: newServerGroupStatus });
 			//#endregion Mark servers as running
 
-			targetServers.forEach(server => {
+			targetServers.forEach(server =>
+			{
 				this.loginToServer(server.name);
 			});
 		}
@@ -156,7 +164,8 @@ export class AppMain extends React.Component<IAppMainProps, IAppMainState> {
 		const serverID = getSafeServerID(serverName);
 		const newtab: JQuery<WebviewTag> = $(`<webview id="${serverID}" src="http://${server}/evo2/fresh/login.asp" webpreferences="disableDialogs" preload="./build/embedded.js"></webview>`);
 		$("#prevPage").append(newtab);
-		newtab.one("did-finish-load", function(){
+		newtab.one("did-finish-load", function ()
+		{
 			newtab[0].send('login', self.state.username, self.state.password);
 		});
 		newtab[0].addEventListener('new-window', (e) =>
@@ -174,8 +183,6 @@ export class AppMain extends React.Component<IAppMainProps, IAppMainState> {
 				e.message != "false"
 			)
 			{
-
-				// e.message = server + ':' + e.message;
 				console.log(server + ':', e.message);
 			}
 		})
@@ -186,8 +193,10 @@ export class AppMain extends React.Component<IAppMainProps, IAppMainState> {
 				this.updateServerEntry(server, event.args[0]);
 				newtab.remove();
 			}
-			else if (event.channel == 'login-clicked'){
-				newtab.one("load-commit", function(){
+			else if (event.channel == 'login-clicked')
+			{
+				newtab.one("load-commit", function ()
+				{
 					// console.log(server + ": load commit");
 					newtab.one("did-navigate", function ()
 					{
@@ -248,7 +257,8 @@ export class AppMain extends React.Component<IAppMainProps, IAppMainState> {
 	 */
 	updateServerEntry = (serverName: string, status: string) =>
 	{
-		if (this.state.checkBuild) {
+		if (this.state.checkBuild)
+		{
 			getReleaseInfoJson(serverName).done((releaseInfo: IReleaseInfo) =>
 			{
 				this.setServerStatus(serverName, status, false, releaseInfo.BuildInfo.BUILD_BUILDNUMBER);
@@ -258,7 +268,7 @@ export class AppMain extends React.Component<IAppMainProps, IAppMainState> {
 		{
 			this.setServerStatus(serverName, status);
 		}
-		// depDashboard.SetServerState(server, status == "Good");
+		depDashboard.SetServerState(serverName, status == "Good");
 	}
 
 	/**Corrects a behavior bug in windows where focus is not returned to the window after an alert. */

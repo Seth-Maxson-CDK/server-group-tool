@@ -37,10 +37,7 @@ export class SideMenu extends React.Component<ISideMenuProps> {
 					tabIndex={2}
 				/>
 				<div className="no-select">
-					<button style={{ width: "100%", marginTop: "50px" }} id="claim-servers">
-						Claim All Servers
-					</button>
-					<div className="control" style={{ width: "100%" }}>
+					<div className="control" style={{ width: "100%", marginTop: "50px" }}>
 						<span className="control-name">
 							Claim All Servers
 						</span>

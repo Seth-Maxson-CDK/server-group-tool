@@ -11,7 +11,7 @@ import { IReleaseInfo, IServerGroup, IServerGroupStatus } from './interfaces';
 import ReactDOM = require('react-dom');
 import React = require('react');
 
-var depDashboard: DeploymentDashboard;
+export var depDashboard: DeploymentDashboard;
 let groups: IServerGroup[] = [];
 let groupStatus: IServerGroupStatus[] = [];
 
@@ -53,12 +53,6 @@ export function getSafeServerID(serverName: string): string
  */
 function init()
 {
-
-	$("#claim-servers").on("click", function ()
-	{
-		depDashboard.ClaimAll();
-	});
-
 	document.getElementById("min-button")?.addEventListener("click", function (e)
 	{
 		const window = remote.getCurrentWindow();
@@ -83,7 +77,7 @@ function init()
  */
 function loadServerDefinitions()
 {
-	var data = fs.readFileSync('//freshbeginnings/share/Development/SethM/Server-Group-Tool/servers.json');
+	let data = fs.readFileSync('//freshbeginnings/share/Development/SethM/Server-Group-Tool/servers.json');
 	groups = JSON.parse(data.toString());
 	groupStatus = groups.map((group) =>
 	{
